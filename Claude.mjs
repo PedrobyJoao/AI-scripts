@@ -3,8 +3,14 @@ import fs from 'fs/promises';
 import path from 'path';
 
 async function getAnthropicKey() {
-  const keyPath = path.join(process.env.HOME, '.config', 'anthropic.token');
-  return (await fs.readFile(keyPath, 'utf8')).trim();
+  const token = process.env.Claude_API_KEY;
+  if (token) {
+    return token.trim();
+  } else {
+    console.error("Error: Claude_API_KEY environment variable is not set.");
+    console.error("Please make sure to export your Anthropic token as an environment variable.");
+    process.exit(1);
+  }
 }
 
 export async function ask({ system, prompt, max_tokens, model = 'claude-3-opus-20240229', temperature = 1, debug = true }) {

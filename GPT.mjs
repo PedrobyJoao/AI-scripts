@@ -10,17 +10,12 @@ import { encode } from "gpt-tokenizer/esm/model/davinci-codex"; // tokenizer
 const openai = new OpenAI({apiKey: await get_token()});
 
 export async function get_token() {
-  const tokenPath = path.join(os.homedir(), ".config", "openai.token");
-  try {
-    const token = (await fs.readFile(tokenPath, "utf8")).trim();
-    return token;
-  } catch (err) {
-    if (err.code === "ENOENT") {
-      console.error("Error: openai.token file not found in `~/.config/openai.token`.");
-      console.error("Please make sure the file exists and contains your OpenAI API token.");
-    } else {
-      console.error("Error reading openai.token file:", err.message);
-    }
+  const token = process.env.OPENAI_API_KEY;
+  if (token) {
+    return token.trim();
+  } else {
+    console.error("Error: OPENAI_TOKEN environment variable is not set.");
+    console.error("Please make sure to export your OpenAI API token as an environment variable.");
     process.exit(1);
   }
 }
